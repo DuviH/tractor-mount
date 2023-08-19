@@ -1,9 +1,12 @@
-#include <Arduino.h>
 #include "TractorImplement.hpp"
+#include <SPI.h>
 
 class SpiImplement : public TractorImplement{
 
-    void    begin();
-    void    execute_command(byte command, byte data[], int data_len);
+    public:
+
+        void    begin();
+        void    read_message();
+        void    execute_command(uint8_t command, uint8_t data[], int data_len);
 
 };

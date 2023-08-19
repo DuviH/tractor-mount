@@ -2,19 +2,19 @@
 #include "SpiImplement.hpp"
 
 void    SpiImplement::begin(){
-    Serial1.begin(9600);
+    SPI.begin();
 }
 
-void    SpiImplement::execute_command(byte command, byte data[], int data_len){
+void    SpiImplement::execute_command(uint8_t command, uint8_t data[], int data_len){
 
-    byte checksum = START_BYTE ^ command;
-    Serial.write(START_BYTE);
-    Serial.write(command);
+    uint8_t checksum = START_BYTE ^ command;
+    SPI.transfer(START_BYTE);
+    SPI.transfer(command);
     for (int i = 0; i < data_len; i++) {
-        Serial.write(data[i]);
+        SPI.transfer(data[i]);
         checksum ^= data[i];
     }
-    Serial.write(checksum);
-    Serial.write(END_BYTE);
+    SPI.transfer(checksum);
+    SPI.transfer(END_BYTE);
 
 }
