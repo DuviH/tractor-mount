@@ -10,3 +10,6 @@ class SpiImplement : public TractorImplement{
         void    execute_command(uint8_t command, uint8_t data[], int data_len);
 
 };
+
+void slaveIsReady();
+void slaveNotReady();
