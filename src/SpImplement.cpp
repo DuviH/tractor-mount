@@ -1,20 +1,27 @@
 
 #include "SpiImplement.hpp"
 
-#define SLAVE_READY_PIN 2
-#define SLAVE_SELECT_PIN 10
-volatile bool slaveReady=false;
+volatile bool   slaveReady=false;
+
+SpiImplement::SpiImplement(){
+    slave_select = 10;
+    slave_ready = 2;
+}
+
+SpiImplement::SpiImplement(int slave_select_pin, int slave_ready_pin){
+    slave_select = slave_select_pin;
+    slave_ready = slave_ready_pin;
+}
 
 void    SpiImplement::begin(){
     pinMode(SS, OUTPUT); // Set the SS pin as output
     SPI.begin();
-    pinMode(SLAVE_SELECT_PIN, OUTPUT);
-    digitalWrite(SLAVE_SELECT_PIN, HIGH);
+    pinMode(slave_select, OUTPUT);
+    digitalWrite(slave_select, HIGH);
 
-    pinMode(SLAVE_READY_PIN, INPUT);
+    pinMode(slave_ready, INPUT_PULLUP);
     // slave can signle when its ready/when its done by changing the SLAVE_READY_PIN
-    attachInterrupt(digitalPinToInterrupt(SLAVE_READY_PIN), slaveIsReady, RISING);
-    attachInterrupt(digitalPinToInterrupt(SLAVE_READY_PIN), slaveNotReady, FALLING);
+    attachInterrupt(digitalPinToInterrupt(slave_ready), slaveChanged, CHANGE);
 
 }
 
@@ -22,21 +29,32 @@ void    SpiImplement::read_message(){
     int     bufferIndex = 0;
     uint8_t checksum = 0;
 
+    unsigned long countTime = 0; // count
+    unsigned long timeout = 3000; // 3 seconds
+
     while (!slaveReady){
-        // might lead to deaedlock, implementing a timeout here might be a good idea
+        
+        if (countTime >= timeout) {
+            
+            return; 
+        }
+        
+        delay(100);
+        countTime += 100;
     }
 
     /* slave ready to send data
         read data until slave isn't ready again (packet done)
     */
 
-    digitalWrite(SLAVE_SELECT_PIN, LOW);
+    digitalWrite(slave_select, LOW);
+
     while (slaveReady){
         buffer[bufferIndex] = SPI.transfer(0x00);
         checksum ^= buffer[bufferIndex++];
     }
     
-    digitalWrite(SLAVE_SELECT_PIN, HIGH);
+    digitalWrite(slave_select, HIGH);
     if (checksum != 0){
         // there was a check sum error
         // add error handeling here
@@ -49,24 +67,19 @@ void    SpiImplement::execute_command(uint8_t command, uint8_t data[], int data_
 
     uint8_t checksum = command;
     SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
-    digitalWrite(SLAVE_SELECT_PIN, LOW);
+    digitalWrite(slave_select, LOW);
     SPI.transfer(command);
     for (int i = 0; i < data_len; i++) {
         SPI.transfer(data[i]);
         checksum ^= data[i];
     }
     SPI.transfer(checksum);
-    digitalWrite(SLAVE_SELECT_PIN, HIGH); 
+    digitalWrite(slave_select, HIGH); 
     SPI.endTransaction();
 
 }
 
 // ISR to handle the "ready" signal from the slave
-void slaveIsReady() {
-  slaveReady = true;
-}
-
-// ISR to handle the "not ready" signal from the slave
-void slaveNotReady() {
-  slaveReady = false;
+void slaveChanged() {
+  slaveReady = !slaveReady;
 }

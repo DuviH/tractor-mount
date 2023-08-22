@@ -36,6 +36,6 @@ protected:
 
     uint8_t         buffer[BUFFER_SIZE];
     bool            power;
-    int             fuel_level;
+    int             fuel_level=100;
 
 };

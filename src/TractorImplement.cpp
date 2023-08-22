@@ -33,7 +33,6 @@ int TractorImplement::get_fuel_level(){
     return fuel_level;
 }
 
-
 void TractorImplement::process_packet(uint8_t packet[], int packet_len){
     // packet_len can be usefull for future use if other commands allow unknown data lens
     switch(packet[0]){
