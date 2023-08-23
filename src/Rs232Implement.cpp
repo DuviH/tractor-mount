@@ -1,4 +1,4 @@
-
+#include "common.hpp"
 #include "Rs232Implement.hpp"
 
 Rs232Implement::Rs232Implement(): serial(0, 1){}

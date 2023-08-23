@@ -2,10 +2,8 @@
     Base Tractor Implement
     All Implements should be derived from this implementation
 */
+#include "common.hpp"
 #include "TractorImplement.hpp"
-
-// TODO: implement constructors
-//TractorImplement:
 
 void TractorImplement::set_power(uint8_t mode){
 

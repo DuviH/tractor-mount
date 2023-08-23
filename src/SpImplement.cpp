@@ -1,4 +1,5 @@
 
+#include "common.hpp"
 #include "SpiImplement.hpp"
 
 volatile bool   slaveReady=false;
