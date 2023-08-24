@@ -3,16 +3,11 @@
 
 #ifdef RS232_IMPLEMENT
 #include "Rs232Implement.hpp"
-#define RS232_TXPIN 9 // tx pin for the rs232 implement
-#define RS232_RXPIN 8 // rx pin for the rs232 implement
-#define RS232_BAUD 9600 // baud rate with the rs232 implement
 Rs232Implement rs232_implement(RS232_TXPIN, RS232_RXPIN);
 #endif
 
 #ifdef SPI_IMPLEMENT
 #include "SpiImplement.hpp"
-#define SLAVE_READY_PIN 2
-#define SLAVE_SELECT_PIN 10
 SpiImplement spi_implement(SLAVE_SELECT_PIN, SLAVE_READY_PIN);
 #endif
 
